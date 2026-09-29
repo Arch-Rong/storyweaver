@@ -3,6 +3,7 @@
 面向作者的小说协作 Agent，规划能力包括小说规划、续写、局部改稿与一致性检查。目前仓库处于初始工程阶段。
 
 - [产品与技术方案](docs/novel-agent-technical-plan.md)：推荐选型、Agent 架构、正文与记忆设计、实施里程碑及验收标准。
+- [Harness 式 Agent 内核参考](docs/novel-agent-harness-architecture.md)：对照 NiuMa-Harness 的分层、依赖与工具映射，说明如何用同样模式实现小说 Agent 原型与后端内核。
 - [Agent 开发规范](AGENTS.md)：Agent 执行任务时必须遵守的工程和小说领域规则。
 - [团队规范与技能路由](docs/agent-development-standards.md)：常用技能的触发时机、开发流程和验收清单。
 
