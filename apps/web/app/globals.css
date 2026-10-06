@@ -1,50 +1,80 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 0.75rem;
+  --background: #f4efe4;
+  --foreground: #1a2230;
+  --card: #fffdf8;
+  --card-foreground: #1a2230;
+  --popover: #fffdf8;
+  --popover-foreground: #1a2230;
+  --primary: #2f5f54;
+  --primary-foreground: #f7faf8;
+  --secondary: #e4efe9;
+  --secondary-foreground: #244a41;
+  --muted: #ebe4d8;
+  --muted-foreground: #4a5568;
+  --accent: #e4efe9;
+  --accent-foreground: #244a41;
+  --destructive: #a33d3d;
+  --border: #ddd4c6;
+  --input: #ddd4c6;
+  --ring: #2f5f54;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply min-h-screen bg-background font-sans text-foreground antialiased;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer components {
+  .tiptap-editor {
+    @apply min-h-[28rem] px-7 py-6 font-serif text-lg leading-[1.95] text-foreground outline-none;
   }
 
-  .imgLight {
-    display: none;
+  .tiptap-editor p {
+    @apply mb-4;
   }
-  .imgDark {
-    display: unset;
+
+  .tiptap-editor h2 {
+    @apply mb-3.5 mt-7 text-[1.35rem] font-semibold;
+  }
+
+  .tiptap-editor blockquote {
+    @apply my-4 border-l-[3px] border-primary pl-4 text-muted-foreground;
   }
 }
