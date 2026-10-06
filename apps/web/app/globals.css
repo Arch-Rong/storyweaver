@@ -2,9 +2,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * StoryWeaver Design Tokens
+ * 规范文档: docs/整体样式开发规范.md
+ *
+ * 品牌色 — 靛光蓝 #5C6BF5
+ *   介于蓝与靛之间，比标准 Tailwind 蓝更柔和、更有产品感；
+ *   白天/暗黑共用同一色相，仅按背景调整明度。
+ *
+ * 白天模式  背景 #FAFBFC · 正文 #18181B
+ * 暗黑模式  背景 #0C0E14 · 正文 #ECEEF4
+ *
+ * 圆角统一 8px
+ */
+
 @theme inline {
   --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --font-serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -19,36 +33,93 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  --color-surface-subtle: var(--surface-subtle);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ── 白天模式 ── */
 :root {
-  --radius: 0.75rem;
-  --background: #f4efe4;
-  --foreground: #1a2230;
-  --card: #fffdf8;
-  --card-foreground: #1a2230;
-  --popover: #fffdf8;
-  --popover-foreground: #1a2230;
-  --primary: #2f5f54;
-  --primary-foreground: #f7faf8;
-  --secondary: #e4efe9;
-  --secondary-foreground: #244a41;
-  --muted: #ebe4d8;
-  --muted-foreground: #4a5568;
-  --accent: #e4efe9;
-  --accent-foreground: #244a41;
-  --destructive: #a33d3d;
-  --border: #ddd4c6;
-  --input: #ddd4c6;
-  --ring: #2f5f54;
+  --radius: 0.5rem;
+
+  /* 品牌色 */
+  --brand: #5c6bf5;
+  --brand-rgb: 92 107 245;
+
+  --background: #fafbfc;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f2f6;
+  --secondary-foreground: #3f3f46;
+  --muted: #f4f5f8;
+  --muted-foreground: #71717a;
+  --accent: #eef0fe;
+  --accent-foreground: #4a58d9;
+  --highlight: #5c6bf5;
+  --destructive: #e11d48;
+  --border: #e8eaef;
+  --input: #dfe1e8;
+  --ring: var(--brand);
+
+  --surface-subtle: #f6f7fa;
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(24, 24, 27, 0.06);
+  --shadow-soft: 0 2px 16px rgba(24, 24, 27, 0.06), 0 0 0 1px rgba(24, 24, 27, 0.03);
+  --glow-top: radial-gradient(
+    ellipse 70% 45% at 50% -15%,
+    rgba(var(--brand-rgb), 0.14),
+    transparent
+  );
+}
+
+/* ── 暗黑模式 ── */
+.dark {
+  --brand: #7b87f8;
+  --brand-rgb: 123 135 248;
+
+  --background: #0c0e14;
+  --foreground: #eceef4;
+  --card: #141820;
+  --card-foreground: #eceef4;
+  --popover: #1a1f2b;
+  --popover-foreground: #eceef4;
+
+  --primary: var(--brand);
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #d4d4d8;
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: #9499a8;
+  --accent: rgba(92, 107, 245, 0.14);
+  --accent-foreground: #a5affb;
+  --highlight: #89b4ff;
+  --destructive: #f87171;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: var(--brand);
+
+  --surface-subtle: rgba(255, 255, 255, 0.02);
+  --glass-bg: rgba(20, 24, 32, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --glow-top: radial-gradient(
+    ellipse 70% 45% at 50% -15%,
+    rgba(var(--brand-rgb), 0.18),
+    transparent
+  );
 }
 
 @layer base {
@@ -59,11 +130,59 @@
   body {
     @apply min-h-screen bg-background font-sans text-foreground antialiased;
   }
+
+  ::selection {
+    background: rgba(var(--brand-rgb), 0.22);
+    color: var(--foreground);
+  }
 }
 
 @layer components {
+  .glass-panel {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+  }
+
+  .glass-toolbar {
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .glow-top {
+    background: var(--glow-top);
+  }
+
+  .surface-subtle {
+    background: var(--surface-subtle);
+  }
+
+  .editor-surface {
+    border: 1px solid var(--border);
+    background: var(--surface-subtle);
+  }
+
+  .editor-immersive {
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+  }
+
+  .editor-toolbar {
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .loading-pulse {
+    @apply animate-pulse rounded-md bg-muted;
+  }
+
   .tiptap-editor {
-    @apply min-h-[28rem] px-7 py-6 font-serif text-lg leading-[1.95] text-foreground outline-none;
+    @apply min-h-[32rem] px-1 py-6 text-[0.9375rem] leading-[1.85] text-foreground outline-none sm:px-2;
   }
 
   .tiptap-editor p {
@@ -71,10 +190,488 @@
   }
 
   .tiptap-editor h2 {
-    @apply mb-3.5 mt-7 text-[1.35rem] font-semibold;
+    @apply mb-3 mt-7 text-base font-semibold tracking-tight text-foreground;
   }
 
   .tiptap-editor blockquote {
-    @apply my-4 border-l-[3px] border-primary pl-4 text-muted-foreground;
+    @apply my-4 border-l-2 border-primary/40 pl-4 text-muted-foreground;
+  }
+
+  .login-brand-line {
+    @apply mx-auto mt-4 h-px w-6 bg-primary/25;
+  }
+
+  /* ── 书架书本卡片 ── */
+  .book-card-wrap {
+    position: relative;
+  }
+
+  .book-card-menu {
+    background: color-mix(in srgb, var(--card) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .book-card {
+    @apply outline-none;
+  }
+
+  .book-stage {
+    position: relative;
+    padding-bottom: 0.35rem;
+    perspective: 1000px;
+  }
+
+  .book-body {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .book-card:hover .book-body {
+    transform: translateY(-5px) rotateY(-8deg);
+  }
+
+  .book-cover-shell {
+    position: relative;
+    z-index: 2;
+    aspect-ratio: 10 / 14;
+    overflow: hidden;
+    border-radius: 2px 6px 6px 2px;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    background: #faf9f7;
+    box-shadow:
+      0 2px 4px rgba(15, 23, 42, 0.04),
+      0 10px 24px rgba(15, 23, 42, 0.09);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .book-card:hover .book-cover-shell {
+    box-shadow:
+      0 6px 10px rgba(15, 23, 42, 0.05),
+      0 18px 36px rgba(15, 23, 42, 0.13);
+  }
+
+  .book-spine-strip {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 5;
+    width: 10px;
+    background: linear-gradient(
+      90deg,
+      rgba(15, 23, 42, 0.12) 0%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .book-cover-image-wrap {
+    position: absolute;
+    inset: 0;
+    left: 10px;
+  }
+
+  .book-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* 默认封面：上下分栏 + 文学风装饰（参考阅读类 App） */
+  .default-book-cover {
+    /* --cover-top: #d4e4f7;
+    --cover-bottom: #f3ede4;
+    --cover-ink: #1f2937;
+    --cover-muted: #6b7280;
+    --cover-accent: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    inset: 0;
+    left: 0px;
+    display: flex;
+    flex-direction: column; */
+  }
+
+  .default-book-top {
+    position: relative;
+    flex: 1.62;
+    overflow: hidden;
+    padding: 0.75rem 0.55rem 0.5rem 0.65rem;
+    background: var(--cover-top);
+  }
+
+  .default-book-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .default-book-decor-a,
+  .default-book-decor-b,
+  .default-book-decor-c,
+  .default-book-decor-d {
+    position: absolute;
+    background: var(--cover-accent);
+    transform: rotate(-16deg);
+    border-radius: 1px;
+  }
+
+  .default-book-decor-a {
+    top: 6%;
+    right: -6%;
+    width: 58%;
+    height: 22%;
+    opacity: 0.75;
+  }
+
+  .default-book-decor-b {
+    top: 30%;
+    right: 8%;
+    width: 34%;
+    height: 14%;
+    opacity: 0.55;
+    transform: rotate(-8deg);
+  }
+
+  .default-book-decor-c {
+    top: 48%;
+    left: 28%;
+    width: 38%;
+    height: 10%;
+    opacity: 0.4;
+    transform: rotate(14deg);
+  }
+
+  .default-book-decor-d {
+    bottom: 8%;
+    right: 18%;
+    width: 24%;
+    height: 8%;
+    opacity: 0.35;
+    transform: rotate(-22deg);
+  }
+
+  .default-book-vertical {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.35rem;
+    z-index: 1;
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    color: color-mix(in srgb, var(--cover-ink) 35%, transparent);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .default-book-heading {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 0.85rem;
+  }
+
+  .default-book-title {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.42;
+    letter-spacing: 0.04em;
+    color: var(--cover-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .default-book-subtitle {
+    margin-top: 0.4rem;
+    font-size: 0.46rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: color-mix(in srgb, var(--cover-ink) 50%, transparent);
+  }
+
+  .default-book-divider {
+    flex-shrink: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--cover-ink) 12%, transparent) 20%,
+      color-mix(in srgb, var(--cover-ink) 12%, transparent) 80%,
+      transparent
+    );
+  }
+
+  .default-book-bottom {
+    flex-shrink: 0;
+    padding: 0.5rem 0.6rem 0.55rem 0.65rem;
+    background: var(--cover-bottom);
+  }
+
+  .default-book-desc {
+    font-size: 0.54rem;
+    line-height: 1.6;
+    color: var(--cover-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .default-book-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    font-size: 0.46rem;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--cover-muted) 75%, transparent);
+  }
+
+  .default-book-foot span:last-child {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .default-cover-1 {
+    --cover-top: #c9daf0;
+    --cover-bottom: #f5f0e8;
+    --cover-accent: rgba(255, 255, 255, 0.55);
+  }
+
+  .default-cover-1.book-spine-strip {
+    background: linear-gradient(90deg, #7a9fd4 0%, #a8c4e8 100%);
+  }
+
+  .default-cover-2 {
+    --cover-top: #f2ccc4;
+    --cover-bottom: #f7f0e6;
+    --cover-accent: rgba(255, 255, 255, 0.5);
+  }
+
+  .default-cover-2.book-spine-strip {
+    background: linear-gradient(90deg, #d0988c 0%, #e8bdb4 100%);
+  }
+
+  .default-cover-3 {
+    --cover-top: #c8e4d8;
+    --cover-bottom: #f2f0ea;
+    --cover-accent: rgba(255, 255, 255, 0.52);
+  }
+
+  .default-cover-3.book-spine-strip {
+    background: linear-gradient(90deg, #7eb8a4 0%, #a8d4c4 100%);
+  }
+
+  .default-cover-4 {
+    --cover-top: #d5ccf0;
+    --cover-bottom: #f3f0f8;
+    --cover-accent: rgba(255, 255, 255, 0.54);
+  }
+
+  .default-cover-4.book-spine-strip {
+    background: linear-gradient(90deg, #9a8fcc 0%, #c0b4e4 100%);
+  }
+
+  .default-cover-5 {
+    --cover-top: #f0ddb8;
+    --cover-bottom: #faf4ea;
+    --cover-accent: rgba(255, 255, 255, 0.48);
+  }
+
+  .default-cover-5.book-spine-strip {
+    background: linear-gradient(90deg, #c4a86c 0%, #e0cda0 100%);
+  }
+
+  .book-pages-edge {
+    position: absolute;
+    top: 3%;
+    right: -5px;
+    z-index: 1;
+    width: 9px;
+    height: 94%;
+  }
+
+  .book-pages-edge span {
+    position: absolute;
+    inset: 0;
+    border-radius: 0 1px 1px 0;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-left: none;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 55%, #e5e7eb 100%);
+  }
+
+  .book-pages-edge span:nth-child(1) {
+    transform: translateX(0);
+  }
+
+  .book-pages-edge span:nth-child(2) {
+    transform: translateX(2px);
+  }
+
+  .book-pages-edge span:nth-child(3) {
+    transform: translateX(4px);
+  }
+
+  .book-pages-edge span:nth-child(4) {
+    transform: translateX(6px);
+  }
+
+  .book-pages-edge span:nth-child(5) {
+    transform: translateX(8px);
+    opacity: 0.85;
+  }
+
+  .book-ground {
+    height: 10px;
+    margin: 0.5rem 12% 0;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.1), transparent 70%);
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+  }
+
+  .dark .book-ground {
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35), transparent 70%);
+  }
+
+  .book-card:hover .book-ground {
+    transform: scaleX(1.06);
+    opacity: 0.9;
+  }
+
+  .book-meta {
+    margin-top: 0.8rem;
+    padding: 0 0.1rem;
+  }
+
+  .book-meta-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+    transition: color 0.2s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .book-card:hover .book-meta-title {
+    color: var(--primary);
+  }
+
+  .book-meta-stats {
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+  }
+
+  .book-cover-preview {
+    max-width: 9.5rem;
+  }
+
+  .book-cover-preview-shell {
+    position: relative;
+    aspect-ratio: 10 / 14;
+    overflow: hidden;
+    border-radius: 2px 6px 6px 2px;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    background: #faf9f7;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  }
+
+  .book-cover-preview-image {
+    position: absolute;
+    inset: 0;
+    left: 10px;
+    width: calc(100% - 10px);
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .bookshelf-panel {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 88%, var(--background) 12%);
+    padding: 1.75rem 1.25rem 1.5rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .bookshelf-slot {
+    position: relative;
+    z-index: 1;
+  }
+
+  .bookshelf-slot::after {
+    content: "";
+    position: absolute;
+    right: 4%;
+    bottom: 2.35rem;
+    left: 4%;
+    z-index: 0;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--border) 80%, var(--foreground) 20%) 20%,
+      color-mix(in srgb, var(--border) 80%, var(--foreground) 20%) 80%,
+      transparent
+    );
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  .book-card-new {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .book-card-new-inner {
+    display: flex;
+    aspect-ratio: 10 / 14;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px 6px 6px 2px;
+    border: 1px dashed color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+    background: color-mix(in srgb, var(--card) 70%, var(--background) 30%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .book-card-new:hover .book-card-new-inner {
+    border-color: rgba(var(--brand-rgb), 0.4);
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .book-body,
+    .book-ground,
+    .book-card-new-inner {
+      transition: none;
+    }
+
+    .book-card:hover .book-body {
+      transform: translateY(-2px);
+    }
   }
 }

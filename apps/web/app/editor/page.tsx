@@ -1,5 +1,5 @@
-import { EditorWorkspace } from "@/components/editor/EditorWorkspace";
+import { redirect } from "next/navigation";
 
-export default function EditorPage() {
-  return <EditorWorkspace />;
+export default function EditorIndexPage() {
+  redirect("/home");
 }
