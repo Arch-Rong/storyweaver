@@ -215,6 +215,12 @@
     @apply outline-none;
   }
 
+  .book-card:focus-visible {
+    outline: 2px solid rgba(var(--brand-rgb), 0.45);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+
   .book-stage {
     position: relative;
     padding-bottom: 0.35rem;
@@ -223,12 +229,11 @@
 
   .book-body {
     position: relative;
-    transform-style: preserve-3d;
     transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .book-card:hover .book-body {
-    transform: translateY(-5px) rotateY(-8deg);
+    transform: translateY(-4px);
   }
 
   .book-cover-shell {
@@ -277,27 +282,33 @@
     display: block;
   }
 
-  /* 默认封面：上下分栏 + 文学风装饰（参考阅读类 App） */
+  /* 默认封面：上下分栏 + 文学风装饰 */
   .default-book-cover {
-    /* --cover-top: #d4e4f7;
-    --cover-bottom: #f3ede4;
-    --cover-ink: #1f2937;
-    --cover-muted: #6b7280;
-    --cover-accent: rgba(255, 255, 255, 0.5);
+    --cover-top: #c9daf0;
+    --cover-bottom: #f5f0e8;
+    --cover-ink: #1a2332;
+    --cover-muted: #5c6570;
+    --cover-accent: rgba(255, 255, 255, 0.42);
     position: absolute;
     inset: 0;
-    left: 0px;
+    left: 10px;
     display: flex;
-    flex-direction: column; */
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   .default-book-top {
     position: relative;
-    flex: 1.62;
+    flex: 1 1 58%;
+    min-height: 0;
     overflow: hidden;
-    padding: 0.75rem 0.55rem 0.5rem 0.65rem;
-    background: var(--cover-top);
+    padding: 0.8rem 0.65rem 0.55rem 0.7rem;
+    background: linear-gradient(165deg, var(--cover-top-light, var(--cover-top)) 0%, var(--cover-top) 100%);
   }
+
+
 
   .default-book-decor {
     position: absolute;
@@ -307,62 +318,37 @@
 
   .default-book-decor-a,
   .default-book-decor-b,
-  .default-book-decor-c,
-  .default-book-decor-d {
+  .default-book-decor-c {
     position: absolute;
     background: var(--cover-accent);
-    transform: rotate(-16deg);
+    transform: rotate(-14deg);
     border-radius: 1px;
   }
 
   .default-book-decor-a {
-    top: 6%;
-    right: -6%;
-    width: 58%;
-    height: 22%;
-    opacity: 0.75;
+    top: 8%;
+    right: -4%;
+    width: 54%;
+    height: 20%;
+    opacity: 0.8;
   }
 
   .default-book-decor-b {
-    top: 30%;
-    right: 8%;
-    width: 34%;
-    height: 14%;
+    top: 36%;
+    right: 10%;
+    width: 32%;
+    height: 12%;
     opacity: 0.55;
-    transform: rotate(-8deg);
+    transform: rotate(-6deg);
   }
 
   .default-book-decor-c {
-    top: 48%;
-    left: 28%;
-    width: 38%;
+    bottom: 12%;
+    left: 18%;
+    width: 40%;
     height: 10%;
     opacity: 0.4;
-    transform: rotate(14deg);
-  }
-
-  .default-book-decor-d {
-    bottom: 8%;
-    right: 18%;
-    width: 24%;
-    height: 8%;
-    opacity: 0.35;
-    transform: rotate(-22deg);
-  }
-
-  .default-book-vertical {
-    position: absolute;
-    top: 0.55rem;
-    right: 0.35rem;
-    z-index: 1;
-    font-family: var(--font-serif);
-    font-size: 0.72rem;
-    font-weight: 600;
-    line-height: 1;
-    letter-spacing: 0.12em;
-    color: color-mix(in srgb, var(--cover-ink) 35%, transparent);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
+    transform: rotate(10deg);
   }
 
   .default-book-heading {
@@ -371,55 +357,48 @@
     display: flex;
     height: 100%;
     flex-direction: column;
-    justify-content: center;
-    padding-right: 0.85rem;
+    justify-content: flex-end;
+    padding-bottom: 0.15rem;
   }
 
   .default-book-title {
     font-family: var(--font-serif);
-    font-size: 0.95rem;
+    font-size: clamp(0.72rem, 3.2vw, 0.92rem);
     font-weight: 700;
-    line-height: 1.42;
-    letter-spacing: 0.04em;
+    line-height: 1.38;
+    letter-spacing: 0.06em;
     color: var(--cover-ink);
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
   .default-book-subtitle {
-    margin-top: 0.4rem;
-    font-size: 0.46rem;
+    margin-top: 0.35rem;
+    font-size: 0.44rem;
     font-weight: 500;
-    letter-spacing: 0.2em;
-    color: color-mix(in srgb, var(--cover-ink) 50%, transparent);
-  }
-
-  .default-book-divider {
-    flex-shrink: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--cover-ink) 12%, transparent) 20%,
-      color-mix(in srgb, var(--cover-ink) 12%, transparent) 80%,
-      transparent
-    );
+    letter-spacing: 0.22em;
+    color: color-mix(in srgb, var(--cover-ink) 48%, transparent);
   }
 
   .default-book-bottom {
-    flex-shrink: 0;
-    padding: 0.5rem 0.6rem 0.55rem 0.65rem;
-    background: var(--cover-bottom);
+    flex: 1 1 42%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.55rem 0.65rem 0.6rem 0.7rem;
+    background: linear-gradient(180deg, var(--cover-bottom) 0%, color-mix(in srgb, var(--cover-bottom) 88%, #ffffff 12%) 100%);
+    border-top: 1px solid color-mix(in srgb, var(--cover-ink) 8%, transparent);
   }
 
   .default-book-desc {
-    font-size: 0.54rem;
-    line-height: 1.6;
+    font-size: 0.52rem;
+    line-height: 1.55;
     color: var(--cover-muted);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -441,9 +420,10 @@
   }
 
   .default-cover-1 {
-    --cover-top: #c9daf0;
-    --cover-bottom: #f5f0e8;
-    --cover-accent: rgba(255, 255, 255, 0.55);
+    --cover-top-light: #dce8f8;
+    --cover-top: #b8cfe8;
+    --cover-bottom: #f6f1ea;
+    --cover-accent: rgba(255, 255, 255, 0.5);
   }
 
   .default-cover-1.book-spine-strip {
@@ -451,9 +431,10 @@
   }
 
   .default-cover-2 {
-    --cover-top: #f2ccc4;
-    --cover-bottom: #f7f0e6;
-    --cover-accent: rgba(255, 255, 255, 0.5);
+    --cover-top-light: #f8ddd6;
+    --cover-top: #e8b8ae;
+    --cover-bottom: #f8f2eb;
+    --cover-accent: rgba(255, 255, 255, 0.48);
   }
 
   .default-cover-2.book-spine-strip {
@@ -471,9 +452,10 @@
   }
 
   .default-cover-4 {
-    --cover-top: #d5ccf0;
-    --cover-bottom: #f3f0f8;
-    --cover-accent: rgba(255, 255, 255, 0.54);
+    --cover-top-light: #e8e2f8;
+    --cover-top: #c8b8e8;
+    --cover-bottom: #f5f2fa;
+    --cover-accent: rgba(255, 255, 255, 0.5);
   }
 
   .default-cover-4.book-spine-strip {
@@ -481,9 +463,10 @@
   }
 
   .default-cover-5 {
-    --cover-top: #f0ddb8;
-    --cover-bottom: #faf4ea;
-    --cover-accent: rgba(255, 255, 255, 0.48);
+    --cover-top-light: #f8ead0;
+    --cover-top: #e8cfa0;
+    --cover-bottom: #faf5ec;
+    --cover-accent: rgba(255, 255, 255, 0.46);
   }
 
   .default-cover-5.book-spine-strip {
@@ -612,25 +595,7 @@
     z-index: 1;
   }
 
-  .bookshelf-slot::after {
-    content: "";
-    position: absolute;
-    right: 4%;
-    bottom: 2.35rem;
-    left: 4%;
-    z-index: 0;
-    height: 3px;
-    border-radius: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--border) 80%, var(--foreground) 20%) 20%,
-      color-mix(in srgb, var(--border) 80%, var(--foreground) 20%) 80%,
-      transparent
-    );
-    opacity: 0.65;
-    pointer-events: none;
-  }
+
 
   .book-card-new {
     display: block;

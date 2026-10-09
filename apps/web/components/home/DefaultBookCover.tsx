@@ -31,28 +31,23 @@ export function DefaultBookCover({
   chapterCount,
   variant,
 }: DefaultBookCoverProps) {
-  const accentChar = title.trim().charAt(0) || "书";
+  const displayTitle = title.trim() || "未命名作品";
 
   return (
-    <div className={cn("default-book-cover border border-red-300!", variant)}>
-      {/* <div className="default-book-top">
+    <div className={cn("default-book-cover", variant)}>
+      <div className="default-book-top">
         <div className="default-book-decor" aria-hidden="true">
           <span className="default-book-decor-a" />
           <span className="default-book-decor-b" />
           <span className="default-book-decor-c" />
-          <span className="default-book-decor-d" />
         </div>
-
-        <p className="default-book-vertical" aria-hidden="true">{accentChar}</p>
 
         <div className="default-book-heading">
-          <h3 className="default-book-title">{title}</h3>
+          <h3 className="default-book-title">{displayTitle}</h3>
           <p className="default-book-subtitle">原创小说</p>
         </div>
-      </div> */}
+      </div>
 
-      {/* <div className="default-book-divider" aria-hidden="true" /> */}
-{/*
       <div className="default-book-bottom">
         <p className="default-book-desc">
           {synopsis?.trim() ? `「${synopsis.trim()}」` : "开始写下你的第一行文字"}
@@ -61,7 +56,7 @@ export function DefaultBookCover({
           <span>StoryWeaver</span>
           <span>{chapterCount} 章</span>
         </p>
-      </div> */}
+      </div>
     </div>
   );
 }

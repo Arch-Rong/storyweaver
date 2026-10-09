@@ -1,34 +1,16 @@
 "use client";
 
-import { ChevronDown, LogOut } from "lucide-react";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { Button } from "@/components/ui/button";
+import { Header } from "@/components/common/Header";
+import { AppLayout, AppLoading } from "@/components/common/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { StatusPill } from "@/components/ui/status-pill";
 import { Textarea } from "@/components/ui/textarea";
-import { clearSession, readSessionFromStorage, type SessionUser } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/hooks/use-require-auth";
 import {
   addChapter,
   countWords,
@@ -51,10 +33,10 @@ type EditorWorkspaceProps = {
 
 export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   const router = useRouter();
-  const [user, setUser] = useState<SessionUser | null>(null);
+  const { user, isLoading: isAuthLoading } = useRequireAuth();
   const [project, setProject] = useState<NovelProject | null>(null);
+  const [isProjectLoading, setIsProjectLoading] = useState(true);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-  const [logoutOpen, setLogoutOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsedState] = useState(false);
   const lastToastAt = useRef(0);
 
@@ -89,19 +71,21 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
   }, []);
 
   useEffect(() => {
-    const session = readSessionFromStorage();
-    if (!session) {
-      router.replace("/login");
+    if (!user) {
       return;
     }
-    setUser(session);
-    const loaded = loadProject(session.username, projectId);
+
+    setIsProjectLoading(true);
+    const loaded = loadProject(user.username, projectId);
     if (!loaded) {
+      setIsProjectLoading(false);
       router.replace("/home");
       return;
     }
+
     setProject(loaded);
-  }, [projectId, router]);
+    setIsProjectLoading(false);
+  }, [projectId, router, user]);
 
   useEffect(() => {
     if (!user || !project) {
@@ -138,11 +122,6 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     setSaveState("saving");
   }
 
-  function handleLogout() {
-    clearSession();
-    router.replace("/login");
-  }
-
   function handleAddChapter() {
     updateProject((current) => addChapter(current));
     toast.message("已新建章节");
@@ -156,13 +135,8 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     });
   }
 
-  if (!user || !project || !activeChapter) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="size-5 animate-spin rounded-full border-2 border-border border-t-primary" />
-        <p className="text-sm text-muted-foreground">正在打开编辑器…</p>
-      </div>
-    );
+  if (isAuthLoading || isProjectLoading || !user || !project || !activeChapter) {
+    return <AppLoading message="正在打开编辑器…" />;
   }
 
   const saveLabel =
@@ -171,17 +145,14 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
     saveState === "saved" ? "active" : saveState === "saving" ? "default" : "muted";
 
   return (
-    <>
-      <div className="grid min-h-screen grid-rows-[auto_1fr] bg-background">
-        <header className="glass-toolbar flex flex-wrap items-center justify-between gap-4 px-5 py-2.5">
-          <div className="flex min-w-0 flex-1 items-center gap-4">
-            <Link
-              href="/home"
-              className="shrink-0 text-xs font-medium tracking-widest text-primary transition-colors hover:text-primary/80"
-            >
-              StoryWeaver
-            </Link>
-            <div className="h-3.5 w-px bg-border" aria-hidden="true" />
+    <AppLayout
+      variant="fill"
+      header={
+        <Header
+          user={user}
+          brandHref="/home"
+          brandLabel="StoryWeaver"
+          leading={
             <Input
               className="max-w-sm border-none bg-transparent px-0 text-sm font-medium shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-0"
               value={project.title}
@@ -191,41 +162,26 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               }
               aria-label="作品标题"
             />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
-              {wordCount.toLocaleString()} 字
-            </span>
-            <StatusPill label={saveLabel} tone={saveTone} />
-            <ThemeToggle />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 gap-1 px-2.5">
-                  {user.displayName}
-                  <ChevronDown className="size-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel>当前账号</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setLogoutOpen(true)}>
-                  <LogOut className="size-4" />
-                  退出登录
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-
-        <div
-          className={cn(
-            "grid min-h-0",
-            sidebarCollapsed
-              ? "lg:grid-cols-[2.75rem_minmax(0,1fr)] xl:grid-cols-[2.75rem_minmax(0,1fr)_15rem]"
-              : "lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_15rem]",
-          )}
-        >
+          }
+          trailing={
+            <>
+              <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                {wordCount.toLocaleString()} 字
+              </span>
+              <StatusPill label={saveLabel} tone={saveTone} />
+            </>
+          }
+        />
+      }
+    >
+      <div
+        className={cn(
+          "grid min-h-0 h-full",
+          sidebarCollapsed
+            ? "lg:grid-cols-[2.75rem_minmax(0,1fr)] xl:grid-cols-[2.75rem_minmax(0,1fr)_15rem]"
+            : "lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[13rem_minmax(0,1fr)_15rem]",
+        )}
+      >
           <ChapterSidebar
             chapters={project.chapters}
             activeChapterId={project.activeChapterId}
@@ -319,25 +275,7 @@ export function EditorWorkspace({ projectId }: EditorWorkspaceProps) {
               </CardContent>
             </Card>
           </aside>
-        </div>
       </div>
-
-      <Dialog open={logoutOpen} onOpenChange={setLogoutOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>确认退出？</DialogTitle>
-            <DialogDescription>
-              退出后本地草稿仍会保留。下次用相同用户名登录即可继续编辑。
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setLogoutOpen(false)}>
-              取消
-            </Button>
-            <Button onClick={handleLogout}>退出登录</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    </AppLayout>
   );
 }

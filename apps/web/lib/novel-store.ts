@@ -1,3 +1,5 @@
+import { normalizeProjectId } from "@/lib/paths";
+
 export type Chapter = {
   id: string;
   title: string;
@@ -55,7 +57,7 @@ export function createDefaultProject(): NovelProject {
   const now = new Date().toISOString();
 
   return {
-    id: `project-${now}`,
+    id: `project-${Date.now()}`,
     title: "未命名作品",
     synopsis: "",
     chapters: [firstChapter],
@@ -149,7 +151,8 @@ export function saveLibrary(username: string, library: NovelLibrary): void {
 
 export function loadProject(username: string, projectId: string): NovelProject | null {
   const library = loadLibrary(username);
-  const project = library.projects.find((item) => item.id === projectId);
+  const decodedId = normalizeProjectId(projectId);
+  const project = library.projects.find((item) => item.id === decodedId);
   return project ? normalizeProject(project) : null;
 }
 

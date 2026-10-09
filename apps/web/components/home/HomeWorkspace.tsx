@@ -1,13 +1,15 @@
 "use client";
 
-import { ChevronDown, LogOut, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Header } from "@/components/common/Header";
+import { AppLayout, AppLoading } from "@/components/common/layout";
+import { PageHeader } from "@/components/common/PageHeader";
 import { BookCard } from "@/components/home/BookCard";
 import { CreateProjectDialog } from "@/components/home/CreateProjectDialog";
 import { EditProjectDialog } from "@/components/home/EditProjectDialog";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,15 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { clearSession, readSessionFromStorage, type SessionUser } from "@/lib/auth";
+import { useRequireAuth } from "@/lib/hooks/use-require-auth";
+import { getEditorPath } from "@/lib/paths";
 import {
   createProject,
   deleteProject,
@@ -36,9 +31,8 @@ import {
 
 export function HomeWorkspace() {
   const router = useRouter();
-  const [user, setUser] = useState<SessionUser | null>(null);
+  const { user, isLoading } = useRequireAuth();
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
-  const [logoutOpen, setLogoutOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectSummary | null>(null);
@@ -46,14 +40,11 @@ export function HomeWorkspace() {
   const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
-    const session = readSessionFromStorage();
-    if (!session) {
-      router.replace("/login");
+    if (!user) {
       return;
     }
-    setUser(session);
-    setProjects(listProjectSummaries(session.username));
-  }, [router]);
+    setProjects(listProjectSummaries(user.username));
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
@@ -97,7 +88,7 @@ export function HomeWorkspace() {
     const project = createProject(user.username, input);
     setCreateOpen(false);
     setCreating(false);
-    router.push(`/editor/${project.id}`);
+    router.push(getEditorPath(project.id));
   }
 
   function handleEditSubmit(input: { title: string; synopsis: string }) {
@@ -122,64 +113,29 @@ export function HomeWorkspace() {
     refreshProjects();
   }
 
-  function handleLogout() {
-    clearSession();
-    router.replace("/login");
-  }
-
-  if (!user) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="size-5 animate-spin rounded-full border-2 border-border border-t-primary" />
-        <p className="text-sm text-muted-foreground">正在加载书架…</p>
-      </div>
-    );
+  if (isLoading || !user) {
+    return <AppLoading message="正在加载书架…" />;
   }
 
   return (
     <>
-      <div className="min-h-screen bg-background">
-        <header className="glass-toolbar flex items-center justify-between gap-4 px-5 py-2.5 sm:px-8">
-          <p className="text-xs font-medium tracking-widest text-primary">STORYWEAVER</p>
-          <div className="flex items-center gap-2.5">
-            <ThemeToggle />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 gap-1 px-2.5">
-                  {user.displayName}
-                  <ChevronDown className="size-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel>当前账号</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setLogoutOpen(true)}>
-                  <LogOut className="size-4" />
-                  退出登录
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-
+      <AppLayout header={<Header user={user} brandHref="/home" />}>
         <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-medium tracking-tight text-foreground">我的书架</h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {projects.length} 部作品 · 点击书本进入编辑
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setCreateOpen(true)}
-            >
-              <Plus className="size-3.5" />
-              新建作品
-            </Button>
-          </div>
+          <PageHeader
+            title="我的书架"
+            description={`${projects.length} 部作品 · 点击书本进入编辑`}
+            actions={
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setCreateOpen(true)}
+              >
+                <Plus className="size-3.5" />
+                新建作品
+              </Button>
+            }
+          />
 
           {projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-20 text-center">
@@ -220,7 +176,7 @@ export function HomeWorkspace() {
             </div>
           )}
         </main>
-      </div>
+      </AppLayout>
 
       <CreateProjectDialog
         open={createOpen}
@@ -267,22 +223,6 @@ export function HomeWorkspace() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={logoutOpen} onOpenChange={setLogoutOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>确认退出？</DialogTitle>
-            <DialogDescription>
-              退出后本地草稿仍会保留。下次用相同用户名登录即可继续编辑。
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setLogoutOpen(false)}>
-              取消
-            </Button>
-            <Button onClick={handleLogout}>退出登录</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

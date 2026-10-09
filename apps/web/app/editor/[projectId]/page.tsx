@@ -1,4 +1,5 @@
 import { EditorWorkspace } from "@/components/editor/EditorWorkspace";
+import { normalizeProjectId } from "@/lib/paths";
 
 type EditorPageProps = {
   params: Promise<{
@@ -8,5 +9,5 @@ type EditorPageProps = {
 
 export default async function EditorPage({ params }: EditorPageProps) {
   const { projectId } = await params;
-  return <EditorWorkspace projectId={projectId} />;
+  return <EditorWorkspace projectId={normalizeProjectId(projectId)} />;
 }
